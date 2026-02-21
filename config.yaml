@@ -61,6 +61,7 @@ display:
 
 # Notification Priority Configuration
 notifications:
+  auto_update: true           # Enable automatic notifications from robot state
   priorities:
     climb_complete: 10        # Highest priority
     flywheel_ready: 5

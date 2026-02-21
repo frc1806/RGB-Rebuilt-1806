@@ -292,6 +292,11 @@ class Config:
         """Default notification duration in seconds."""
         return self.get("notifications.default_duration", 3.0)
 
+    @property
+    def notification_auto_update(self) -> bool:
+        """Whether to automatically update notifications from robot state."""
+        return self.get("notifications.auto_update", True)
+
     # Simulation properties
 
     @property

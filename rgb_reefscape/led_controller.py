@@ -15,20 +15,20 @@ class LEDController:
     Controls WS2811/WS2812B LED strip via SPI interface.
 
     Uses SPI to encode WS2812 protocol:
-    - Each bit encoded as 4 SPI bits at 3.2MHz
-    - '1' bit = 0b1110 (0.9375us high, 0.3125us low) ≈ target 0.8us/0.45us
-    - '0' bit = 0b1000 (0.3125us high, 0.9375us low) ≈ target 0.4us/0.85us
+    - Each WS2812 bit encoded as 1 full SPI byte
+    - '1' bit = 0b11110000 (0xF0) at 2.4MHz → 0.833us high, 0.833us low
+    - '0' bit = 0b10000000 (0x80) at 2.4MHz → 0.417us high, 1.25us low
     - Color order: GRB (not RGB!)
 
     Supports both real hardware and simulation mode for development.
     """
 
-    # WS2812 timing encoded as SPI bits (4 bits per WS2812 bit)
-    # At 3.2MHz SPI, each SPI bit is ~312.5ns
+    # WS2812 timing: Use 1 full SPI byte per WS2812 bit
+    # At 2.4MHz (standard), each byte takes ~3.33us
     # WS2812 spec: '1'=0.8us high/0.45us low, '0'=0.4us high/0.85us low
-    # Using 4 SPI bits per WS2812 bit for better timing accuracy
-    BIT_1 = 0b1110  # High bit: 3 high, 1 low (0.9375us / 0.3125us)
-    BIT_0 = 0b1000  # Low bit: 1 high, 3 low (0.3125us / 0.9375us)
+    # This is the most reliable encoding method
+    SPI_BYTE_1 = 0xF0  # Binary: 11110000 (4 high, 4 low)
+    SPI_BYTE_0 = 0x80  # Binary: 10000000 (1 high, 7 low)
 
     def __init__(
         self,
@@ -86,16 +86,18 @@ class LEDController:
                 self.spi.open(bus, device)
 
                 # SPI settings for WS2812:
-                # - Speed: 3.2 MHz (optimal for 4-bit encoding at 800kHz WS2812 rate)
+                # - Speed: 2.4 MHz (standard for byte-per-bit encoding)
                 # - Mode: 0 (CPOL=0, CPHA=0)
                 # - Bits per word: 8
-                self.spi.max_speed_hz = 3200000  # 3.2 MHz
+                # - Latch speed: 0 (disabled)
+                self.spi.max_speed_hz = 2400000  # 2.4 MHz
                 self.spi.mode = 0
                 self.spi.bits_per_word = 8
+                self.spi.lsbfirst = False  # MSB first
 
                 logger.info(
                     f"LED Controller initialized on {spi_dev} "
-                    f"({led_count} LEDs, brightness {brightness}, 3.2MHz SPI)"
+                    f"({led_count} LEDs, brightness {brightness}, 2.4MHz SPI)"
                 )
             except ImportError:
                 logger.warning(
@@ -113,31 +115,22 @@ class LEDController:
         """
         Encode a single byte into SPI data for WS2812.
 
-        Each bit becomes 4 SPI bits: 1110 for '1', 1000 for '0'
-        One byte (8 bits) becomes 4 bytes (32 SPI bits)
+        Each bit becomes 1 full SPI byte: 0xF0 for '1', 0x80 for '0'
+        One byte (8 bits) becomes 8 SPI bytes (simple and reliable)
 
         Args:
             byte_val: Value to encode (0-255)
 
         Returns:
-            4 bytes of SPI data
+            8 bytes of SPI data
         """
-        # Build bit array for all 8 bits
-        bits = []
-        for bit_index in range(7, -1, -1):  # MSB first
-            bit = (byte_val >> bit_index) & 1
-            if bit:
-                bits.extend([1, 1, 1, 0])  # HIGH: 1110
-            else:
-                bits.extend([1, 0, 0, 0])  # LOW: 1000
-
-        # Convert 32 bits into 4 bytes
-        result = bytearray(4)
-        for i in range(4):
-            byte_val = 0
-            for j in range(8):
-                byte_val = (byte_val << 1) | bits[i * 8 + j]
-            result[i] = byte_val
+        # Each WS2812 bit becomes one full SPI byte
+        result = bytearray(8)
+        for bit_index in range(8):
+            # Extract bit (MSB first)
+            bit = (byte_val >> (7 - bit_index)) & 1
+            # Encode as full byte
+            result[bit_index] = self.SPI_BYTE_1 if bit else self.SPI_BYTE_0
 
         return bytes(result)
 
@@ -231,9 +224,9 @@ class LEDController:
             spi_data = bytearray()
 
             # Reset signal: at least 50us of low (zeros)
-            # At 3.2MHz, 50us = 160 bits = 20 bytes
-            # Add extra for safety
-            spi_data.extend(b'\x00' * 30)
+            # At 2.4MHz, 50us = 120 bits = 15 bytes
+            # Use more for safety and clean signal
+            spi_data.extend(b'\x00' * 40)
 
             # Encode each LED (GRB order for WS2812B)
             for r, g, b in self._buffer:
@@ -245,13 +238,13 @@ class LEDController:
                     b = int(b * scale)
 
                 # WS2812B uses GRB order
-                # Each color byte becomes 4 SPI bytes
+                # Each color byte becomes 8 SPI bytes (1 byte per bit)
                 spi_data.extend(self._encode_byte(g))
                 spi_data.extend(self._encode_byte(r))
                 spi_data.extend(self._encode_byte(b))
 
             # Add trailing reset for latch
-            spi_data.extend(b'\x00' * 30)
+            spi_data.extend(b'\x00' * 40)
 
             # Send to SPI
             self.spi.writebytes(list(spi_data))

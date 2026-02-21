@@ -99,8 +99,9 @@ class RGBReefscape:
                 # Get current robot data
                 data = self.nt_client.data
 
-                # Update notification queue based on robot state
-                self.notification_queue.update_from_data(data)
+                # Update notification queue based on robot state (if enabled)
+                if self.config.notification_auto_update:
+                    self.notification_queue.update_from_data(data)
 
                 # Update display modes
                 self.time_display.update(data)
