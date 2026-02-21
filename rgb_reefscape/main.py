@@ -1,5 +1,5 @@
 """
-RGB-Reefscape-1806 Main Application
+RGB-Rebuilt-1806 Main Application
 FRC Robot LED Controller
 """
 
@@ -29,7 +29,7 @@ class RGBReefscape:
 
     def __init__(self, config_path: str = None, simulate: bool = False):
         """
-        Initialize RGB-Reefscape application.
+        Initialize RGB-Rebuilt application.
 
         Args:
             config_path: Path to configuration file
@@ -72,7 +72,7 @@ class RGBReefscape:
         self.frame_count = 0
         self.fps = self.config.fps
 
-        logger.info("RGB-Reefscape initialized")
+        logger.info("RGB-Rebuilt initialized")
 
     async def connect_network_tables(self) -> None:
         """Connect to Network Tables server."""
@@ -191,7 +191,7 @@ class RGBReefscape:
 
     async def shutdown(self) -> None:
         """Clean shutdown."""
-        logger.info("Shutting down RGB-Reefscape...")
+        logger.info("Shutting down RGB-Rebuilt...")
         self.running = False
 
         # Clean up components
@@ -223,7 +223,7 @@ def setup_logging(verbose: bool = False) -> None:
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="RGB-Reefscape-1806: FRC Robot LED Controller"
+        description="RGB-Rebuilt-1806: FRC Robot LED Controller"
     )
 
     parser.add_argument(
@@ -259,8 +259,8 @@ async def async_main() -> None:
     setup_logging(args.verbose)
 
     logger.info("=" * 60)
-    logger.info("RGB-Reefscape-1806 Starting")
-    logger.info("FRC Robot LED Controller for Raspberry Pi 5")
+    logger.info("RGB-Rebuilt-1806 Starting")
+    logger.info("FRC Robot LED Controller for Orange Pi 5")
     logger.info("=" * 60)
 
     # Create application

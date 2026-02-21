@@ -1,6 +1,6 @@
 # Installation Scripts
 
-This directory contains installation and deployment scripts for RGB-Reefscape-1806.
+This directory contains installation and deployment scripts for RGB-Rebuilt-1806.
 
 ## Files
 

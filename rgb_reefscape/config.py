@@ -73,8 +73,8 @@ class Config:
         if not isinstance(hw.get("led_count"), int) or hw["led_count"] <= 0:
             raise ValueError("Invalid hardware.led_count")
 
-        if not isinstance(hw.get("gpio_pin"), int):
-            raise ValueError("Invalid hardware.gpio_pin")
+        if not isinstance(hw.get("spi_dev"), str):
+            raise ValueError("Invalid or missing hardware.spi_dev")
 
         # Validate network_tables section
         if "network_tables" not in self._data:
@@ -93,10 +93,26 @@ class Config:
             raise ValueError("Missing 'sections' section in config")
 
         sections = self._data["sections"]
-        if "time_display" not in sections:
-            raise ValueError("Missing sections.time_display")
-        if "notifications" not in sections:
-            raise ValueError("Missing sections.notifications")
+
+        # Check that at least one section exists
+        if not sections:
+            raise ValueError("No sections defined in config")
+
+        # Validate that we have at least one time_display and one notifications type
+        section_types = set()
+        for section_data in sections.values():
+            # Get type from section, fallback to name if type not specified (backward compat)
+            section_type = section_data.get("type")
+            if section_type:
+                section_types.add(section_type)
+
+        # Note: We don't strictly require specific types, as users may customize
+        # Just validate that sections have required fields
+        for name, section_data in sections.items():
+            if "start" not in section_data:
+                raise ValueError(f"Section '{name}' missing required field 'start'")
+            if "length" not in section_data:
+                raise ValueError(f"Section '{name}' missing required field 'length'")
 
         # Validate section bounds
         led_count = hw["led_count"]

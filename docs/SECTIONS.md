@@ -2,7 +2,7 @@
 
 ## Overview
 
-RGB-Reefscape-1806 supports flexible LED section configuration, allowing you to partition your LED strip into multiple sections with different purposes. This is especially useful for wrapping LEDs around the robot perimeter.
+RGB-Rebuilt-1806 supports flexible LED section configuration, allowing you to partition your LED strip into multiple sections with different purposes. This is especially useful for wrapping LEDs around the robot perimeter.
 
 ## Section Types
 

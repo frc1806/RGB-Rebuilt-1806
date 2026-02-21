@@ -1,5 +1,5 @@
 """
-RGB-Reefscape-1806 Setup
+RGB-Rebuilt-1806 Setup
 FRC Robot LED Controller for Orange Pi 5
 """
 
@@ -9,13 +9,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="rgb-reefscape-1806",
+    name="rgb-rebuilt-1806",
     version="0.1.0",
     author="SWAT Team 1806",
-    description="FRC Robot LED Controller for Orange Pi 5 /Raspberry Pi with Network Tables",
+    description="FRC Robot LED Controller for Orange Pi 5 with Network Tables",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/swat1806/RGB-Reefscape-1806",
+    url="https://github.com/swat1806/RGB-Rebuilt-1806",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -42,7 +42,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "rgb-reefscape=rgb_reefscape.main:main",
+            "rgb-rebuilt=rgb_reefscape.main:main",
         ],
     },
 )

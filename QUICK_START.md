@@ -1,4 +1,4 @@
-# RGB-Reefscape-1806 Quick Start Guide
+# RGB-Rebuilt-1806 Quick Start Guide
 
 Fast installation and setup for competition day.
 
@@ -15,8 +15,8 @@ Fast installation and setup for competition day.
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/swat1806/RGB-Reefscape-1806.git
-cd RGB-Reefscape-1806
+git clone https://github.com/swat1806/RGB-Rebuilt-1806.git
+cd RGB-Rebuilt-1806
 
 # 2. Run installer
 chmod +x scripts/install.sh
@@ -179,7 +179,7 @@ sudo ./scripts/install.sh
 
 ## Contact & Support
 
-- GitHub: https://github.com/swat1806/RGB-Reefscape-1806
+- GitHub: https://github.com/swat1806/RGB-Rebuilt-1806
 - README: [README.md](README.md)
 - Wiring: [WIRING.md](WIRING.md)
 - Config: [config.yaml](config.yaml)

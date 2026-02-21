@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# RGB-Reefscape-1806 Headless Runner
+# RGB-Rebuilt-1806 Headless Runner
 # Simple script to run RGB controller in headless mode
 #
 
@@ -23,7 +23,7 @@ log() {
 }
 
 log "========================================="
-log "RGB-Reefscape-1806 Starting"
+log "RGB-Rebuilt-1806 Starting"
 log "========================================="
 log "Project directory: $PROJECT_DIR"
 log "Python: $(which python3)"
@@ -46,12 +46,12 @@ else
 fi
 
 # Run the application
-log "Starting RGB-Reefscape-1806..."
+log "Starting RGB-Rebuilt-1806..."
 python3 -m rgb_reefscape.main $SIMULATE_FLAG 2>&1 | tee -a "$LOG_FILE"
 
 # Capture exit code
 EXIT_CODE=$?
 
-log "RGB-Reefscape-1806 exited with code: $EXIT_CODE"
+log "RGB-Rebuilt-1806 exited with code: $EXIT_CODE"
 
 exit $EXIT_CODE

@@ -1,4 +1,4 @@
-# RGB-Reefscape-1806 Wiring Guide
+# RGB-Rebuilt-1806 Wiring Guide
 
 Complete wiring instructions for connecting WS2812B LED strips to Orange Pi 5 or Raspberry Pi 5 using SPI interface.
 

@@ -1,4 +1,4 @@
-# RGB-Reefscape-1806
+# RGB-Rebuilt-1806
 
 FRC Robot LED Controller for Orange Pi 5 controlling WS2811/WS2812B RGB LEDs with Network Tables integration for the 2026 FIRST Robotics Competition season. Designed to run alongside PhotonVision on the same device.
 
@@ -32,8 +32,8 @@ FRC Robot LED Controller for Orange Pi 5 controlling WS2811/WS2812B RGB LEDs wit
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/swat1806/RGB-Reefscape-1806.git
-   cd RGB-Reefscape-1806
+   git clone https://github.com/swat1806/RGB-Rebuilt-1806.git
+   cd RGB-Rebuilt-1806
    ```
 
 2. **Run the installation script**:
@@ -136,7 +136,7 @@ sections:
 
 ## Network Tables Topics
 
-RGB-Reefscape-1806 subscribes to the following Network Tables topics from the RoboRio:
+RGB-Rebuilt-1806 subscribes to the following Network Tables topics from the RoboRio:
 
 ### FMS Information
 - `/FMSInfo/MatchNumber` (int)
@@ -298,7 +298,7 @@ python3 simulator/desktop_app.py --team 1806
 ## Project Structure
 
 ```
-RGB-Reefscape-1806/
+RGB-Rebuilt-1806/
 ├── rgb_reefscape/          # Main package
 │   ├── main.py             # Entry point
 │   ├── led_controller.py   # LED hardware interface

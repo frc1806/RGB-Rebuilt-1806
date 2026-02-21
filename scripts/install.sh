@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# RGB-Reefscape-1806 Installation Script
+# RGB-Rebuilt-1806 Installation Script
 # For Orange Pi 5 and Raspberry Pi 5
 #
 
@@ -13,7 +13,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo "======================================"
-echo "RGB-Reefscape-1806 Installation"
+echo "RGB-Rebuilt-1806 Installation"
 echo "======================================"
 echo ""
 
@@ -128,7 +128,7 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "Project directory: $PROJECT_DIR"
 
 # Install as the actual user (not root)
-echo "Installing RGB-Reefscape-1806 Python package..."
+echo "Installing RGB-Rebuilt-1806 Python package..."
 sudo -u "$ACTUAL_USER" pip3 install --user -e "$PROJECT_DIR"
 
 # Install systemd service
