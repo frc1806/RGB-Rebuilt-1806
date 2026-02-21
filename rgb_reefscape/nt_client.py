@@ -67,9 +67,14 @@ class NetworkTablesClient:
                     f"Network Tables client initialized "
                     f"(server: {config.server_address})"
                 )
-            except ImportError:
-                logger.warning(
-                    "ntcore library not available, falling back to simulation mode"
+            except ImportError as e:
+                import sys
+                logger.error(
+                    f"ntcore library not available: {e}\n"
+                    f"Python executable: {sys.executable}\n"
+                    f"Python path: {sys.path[:3]}...\n"
+                    f"Install with: pip install pyntcore\n"
+                    f"Falling back to simulation mode"
                 )
                 self.simulate = True
                 self.inst = None
