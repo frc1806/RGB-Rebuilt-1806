@@ -64,14 +64,20 @@ class TimeDisplayMode(StaticMode):
         # Get time data
         goal_active = data.get("goal_active", False)
         time_remaining = data.get("time_remaining", 0.0)
-        max_time = data.get("max_time", 10.0)  # Default max time
+
+        # Always use 15 seconds as max for better resolution
+        # This gives drivers precise timing info in the critical last 15 seconds
+        MAX_DISPLAY_TIME = 15.0
 
         # Determine color based on active/inactive
         color = self.active_color if goal_active else self.inactive_color
 
         # Calculate how many LEDs should be lit based on time remaining
-        if max_time > 0:
-            ratio = max(0.0, min(1.0, time_remaining / max_time))
+        # Clip to 100% when more than 15 seconds remain (show all LEDs on)
+        if time_remaining >= MAX_DISPLAY_TIME:
+            ratio = 1.0  # 100% filled
+        elif MAX_DISPLAY_TIME > 0:
+            ratio = max(0.0, time_remaining / MAX_DISPLAY_TIME)
         else:
             ratio = 0.0
 
@@ -85,7 +91,7 @@ class TimeDisplayMode(StaticMode):
                 f"Time Display [{section.name}]: "
                 f"state={match_state}, "
                 f"goal_active={goal_active}, "
-                f"time={time_remaining:.1f}/{max_time:.1f}s, "
+                f"time={time_remaining:.1f}/{MAX_DISPLAY_TIME:.1f}s, "
                 f"ratio={ratio:.2%}, "
                 f"LEDs={leds_to_light}/{section.length}, "
                 f"color={'active' if goal_active else 'inactive'}"
