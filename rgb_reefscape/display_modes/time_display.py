@@ -4,6 +4,7 @@ Displays countdown for active/inactive game periods
 """
 
 import logging
+import time
 from typing import Any, Dict, Tuple
 
 from .base_mode import StaticMode
@@ -40,6 +41,10 @@ class TimeDisplayMode(StaticMode):
         section_config = config.get_section("time_display")
         self.direction = section_config.get("direction", "right") if section_config else "right"
 
+        # Periodic logging
+        self.last_log_time = 0
+        self.log_interval = 2.0  # Log every 2 seconds
+
         logger.info(
             f"Time display initialized "
             f"(direction={self.direction}, "
@@ -71,6 +76,21 @@ class TimeDisplayMode(StaticMode):
             ratio = 0.0
 
         leds_to_light = int(ratio * section.length)
+
+        # Periodic logging (every 2 seconds)
+        current_time = time.time()
+        if current_time - self.last_log_time >= self.log_interval:
+            match_state = data.get("match_state", "unknown")
+            logger.info(
+                f"Time Display [{section.name}]: "
+                f"state={match_state}, "
+                f"goal_active={goal_active}, "
+                f"time={time_remaining:.1f}/{max_time:.1f}s, "
+                f"ratio={ratio:.2%}, "
+                f"LEDs={leds_to_light}/{section.length}, "
+                f"color={'active' if goal_active else 'inactive'}"
+            )
+            self.last_log_time = current_time
 
         # Render based on direction
         if self.direction == "left":
@@ -146,7 +166,7 @@ class TimeDisplayMode(StaticMode):
         if match_state == "pre-match":
             data["max_time"] = 15.0  # Pre-match typically 15s
         elif match_state == "auto":
-            data["max_time"] = 15.0  # Auto is 15s
+            data["max_time"] = 20.0  # Auto is 15s
         elif match_state == "teleop":
             data["max_time"] = 135.0  # Teleop is 2:15 = 135s
         elif match_state == "endgame":
