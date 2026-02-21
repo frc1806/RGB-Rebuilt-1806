@@ -182,28 +182,47 @@ class NetworkTablesClient:
             return
 
         # Connection is good, update data
+        # Only update values if they are not None (published by robot)
         try:
             # FMS Info
-            self.data["match_number"] = self.topics["match_number"].get()
-            self.data["event_name"] = self.topics["event_name"].get()
+            val = self.topics["match_number"].get()
+            if val is not None:
+                self.data["match_number"] = val
+            val = self.topics["event_name"].get()
+            if val is not None:
+                self.data["event_name"] = val
 
             # Robot State
-            self.data["match_state"] = self.topics["match_state"].get()
-            self.data["goal_active"] = self.topics["goal_active"].get()
-            self.data["time_remaining"] = self.topics["time_remaining"].get()
+            val = self.topics["match_state"].get()
+            if val is not None:
+                self.data["match_state"] = val
+            val = self.topics["goal_active"].get()
+            if val is not None:
+                self.data["goal_active"] = val
+            val = self.topics["time_remaining"].get()
+            if val is not None:
+                self.data["time_remaining"] = val
 
             # Vision
-            self.data["vision_connected"] = self.topics["vision_connected"].get()
-            self.data["vision_has_targets"] = self.topics["vision_has_targets"].get()
+            val = self.topics["vision_connected"].get()
+            if val is not None:
+                self.data["vision_connected"] = val
+            val = self.topics["vision_has_targets"].get()
+            if val is not None:
+                self.data["vision_has_targets"] = val
 
             # Swerve
             modules = self.topics["swerve_modules_aligned"].get()
-            if len(modules) >= 4:
+            if modules is not None and len(modules) >= 4:
                 self.data["swerve_modules_aligned"] = list(modules[:4])
 
             # Mechanisms
-            self.data["flywheel_at_speed"] = self.topics["flywheel_at_speed"].get()
-            self.data["climb_complete"] = self.topics["climb_complete"].get()
+            val = self.topics["flywheel_at_speed"].get()
+            if val is not None:
+                self.data["flywheel_at_speed"] = val
+            val = self.topics["climb_complete"].get()
+            if val is not None:
+                self.data["climb_complete"] = val
 
         except Exception as e:
             logger.error(f"Error updating Network Tables data: {e}")

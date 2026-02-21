@@ -213,43 +213,56 @@ class NotificationQueue:
         Args:
             data: Current robot data from Network Tables
         """
+        # Skip update if data is empty (Network Tables not connected)
+        if not data:
+            return
+
         # Check flywheel status (only act on transitions)
-        flywheel_at_speed = data.get("flywheel_at_speed", False)
-        prev_flywheel = self._previous_states.get("flywheel_at_speed", False)
+        # Treat None as False (not populated yet)
+        flywheel_at_speed = data.get("flywheel_at_speed") or False
+        prev_flywheel = self._previous_states.get("flywheel_at_speed") or False
 
-        if flywheel_at_speed and not prev_flywheel:
-            # Transition: False -> True (flywheel just reached speed)
-            if not self.find_by_type("flywheel_ready"):
-                self.add("flywheel_ready")
-        elif not flywheel_at_speed and prev_flywheel:
-            # Transition: True -> False (flywheel slowed down)
-            self.remove("flywheel_ready")
+        # Only act if we have actual state changes (and values are valid booleans)
+        if isinstance(flywheel_at_speed, bool) and isinstance(prev_flywheel, bool):
+            if flywheel_at_speed and not prev_flywheel:
+                # Transition: False -> True (flywheel just reached speed)
+                logger.debug(f"Flywheel transition: False -> True")
+                if not self.find_by_type("flywheel_ready"):
+                    self.add("flywheel_ready")
+            elif not flywheel_at_speed and prev_flywheel:
+                # Transition: True -> False (flywheel slowed down)
+                logger.debug(f"Flywheel transition: True -> False")
+                self.remove("flywheel_ready")
 
-        self._previous_states["flywheel_at_speed"] = flywheel_at_speed
+            self._previous_states["flywheel_at_speed"] = flywheel_at_speed
 
         # Check climb status (only act on transition to True)
-        climb_complete = data.get("climb_complete", False)
-        prev_climb = self._previous_states.get("climb_complete", False)
+        # Treat None as False (not populated yet)
+        climb_complete = data.get("climb_complete") or False
+        prev_climb = self._previous_states.get("climb_complete") or False
 
-        if climb_complete and not prev_climb:
-            # Transition: False -> True (climb just completed)
-            if not self.find_by_type("climb_complete"):
-                self.add("climb_complete", duration=5.0)  # Longer duration for success
+        if isinstance(climb_complete, bool) and isinstance(prev_climb, bool):
+            if climb_complete and not prev_climb:
+                # Transition: False -> True (climb just completed)
+                if not self.find_by_type("climb_complete"):
+                    self.add("climb_complete", duration=5.0)  # Longer duration for success
 
-        self._previous_states["climb_complete"] = climb_complete
+            self._previous_states["climb_complete"] = climb_complete
 
         # Check vision acquisition (only act on transition to both True)
-        vision_connected = data.get("vision_connected", False)
-        vision_has_targets = data.get("vision_has_targets", False)
+        # Treat None as False (not populated yet)
+        vision_connected = data.get("vision_connected") or False
+        vision_has_targets = data.get("vision_has_targets") or False
         vision_key = vision_connected and vision_has_targets
-        prev_vision = self._previous_states.get("vision_acquired", False)
+        prev_vision = self._previous_states.get("vision_acquired") or False
 
-        if vision_key and not prev_vision:
-            # Transition: False -> True (just acquired target)
-            if not self.find_by_type("vision_acquired"):
-                self.add("vision_acquired", duration=2.0)
+        if isinstance(vision_key, bool) and isinstance(prev_vision, bool):
+            if vision_key and not prev_vision:
+                # Transition: False -> True (just acquired target)
+                if not self.find_by_type("vision_acquired"):
+                    self.add("vision_acquired", duration=2.0)
 
-        self._previous_states["vision_acquired"] = vision_key
+            self._previous_states["vision_acquired"] = vision_key
 
     def __repr__(self) -> str:
         """String representation."""
