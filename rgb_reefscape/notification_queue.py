@@ -63,6 +63,9 @@ class NotificationQueue:
         self.notifications: list[Notification] = []
         self.default_duration = config.notification_default_duration
 
+        # Track previous states to detect transitions
+        self._previous_states: Dict[str, bool] = {}
+
         logger.info(f"Notification queue initialized (default duration={self.default_duration}s)")
 
     def add(
@@ -204,31 +207,49 @@ class NotificationQueue:
         Update queue based on robot data.
 
         Automatically adds/removes notifications based on robot state.
+        Only acts on state transitions (False->True or True->False) to avoid
+        continuously adding/removing notifications when Network Tables are unpopulated.
 
         Args:
             data: Current robot data from Network Tables
         """
-        # Check flywheel status
-        #if data.get("flywheel_at_speed", False):
-        #    if not self.find_by_type("flywheel_ready"):
-        #        self.add("flywheel_ready")
-        #else:
-        #    self.remove("flywheel_ready")
+        # Check flywheel status (only act on transitions)
+        flywheel_at_speed = data.get("flywheel_at_speed", False)
+        prev_flywheel = self._previous_states.get("flywheel_at_speed", False)
 
-        # Check climb status
-        if data.get("climb_complete", False):
+        if flywheel_at_speed and not prev_flywheel:
+            # Transition: False -> True (flywheel just reached speed)
+            if not self.find_by_type("flywheel_ready"):
+                self.add("flywheel_ready")
+        elif not flywheel_at_speed and prev_flywheel:
+            # Transition: True -> False (flywheel slowed down)
+            self.remove("flywheel_ready")
+
+        self._previous_states["flywheel_at_speed"] = flywheel_at_speed
+
+        # Check climb status (only act on transition to True)
+        climb_complete = data.get("climb_complete", False)
+        prev_climb = self._previous_states.get("climb_complete", False)
+
+        if climb_complete and not prev_climb:
+            # Transition: False -> True (climb just completed)
             if not self.find_by_type("climb_complete"):
                 self.add("climb_complete", duration=5.0)  # Longer duration for success
 
-        # Check vision acquisition
+        self._previous_states["climb_complete"] = climb_complete
+
+        # Check vision acquisition (only act on transition to both True)
         vision_connected = data.get("vision_connected", False)
         vision_has_targets = data.get("vision_has_targets", False)
+        vision_key = vision_connected and vision_has_targets
+        prev_vision = self._previous_states.get("vision_acquired", False)
 
-        # Add vision acquired notification on transition
-        if vision_connected and vision_has_targets:
-            # This would need to track previous state to detect transition
-            # For now, we'll skip this auto-detection
-            pass
+        if vision_key and not prev_vision:
+            # Transition: False -> True (just acquired target)
+            if not self.find_by_type("vision_acquired"):
+                self.add("vision_acquired", duration=2.0)
+
+        self._previous_states["vision_acquired"] = vision_key
 
     def __repr__(self) -> str:
         """String representation."""
