@@ -30,6 +30,10 @@ class NetworkTablesClient:
         self.connected = False
         self.last_connection_attempt = 0
 
+        # Debug logging
+        self.last_debug_log = 0
+        self.debug_log_interval = 5.0  # Log NT data every 5 seconds
+
         # Data storage - simple dict (no locks needed with asyncio)
         self.data: Dict[str, Any] = {
             # FMS Info
@@ -167,10 +171,12 @@ class NetworkTablesClient:
     async def update(self) -> None:
         """Update local data from Network Tables. Called periodically from main loop."""
         if self.simulate:
+            logger.debug("Using simulated/mock data (simulation mode active)")
             self._generate_mock_data()
             return
 
         if self.inst is None:
+            logger.debug("NetworkTables instance is None, cannot update")
             return
 
         # Check connection status
@@ -228,6 +234,21 @@ class NetworkTablesClient:
             val = self.topics["climb_complete"].get()
             if val is not None:
                 self.data["climb_complete"] = val
+
+            # Periodic debug logging
+            current_time = time.time()
+            if current_time - self.last_debug_log >= self.debug_log_interval:
+                logger.info(
+                    f"Network Tables Data: "
+                    f"match_state={self.data.get('match_state')}, "
+                    f"goal_active={self.data.get('goal_active')}, "
+                    f"time={self.data.get('time_remaining'):.1f}s, "
+                    f"flywheel={self.data.get('flywheel_at_speed')}, "
+                    f"vision_connected={self.data.get('vision_connected')}, "
+                    f"simulate={self.simulate}, "
+                    f"connected={self.connected}"
+                )
+                self.last_debug_log = current_time
 
         except Exception as e:
             logger.error(f"Error updating Network Tables data: {e}")
