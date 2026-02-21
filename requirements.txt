@@ -1,5 +1,5 @@
-# Core LED control (SPI-based for Orange Pi 5)
-ws2812-spi>=1.0.0
+# Core LED control (SPI interface for Orange Pi 5 and Raspberry Pi 5)
+spidev>=3.5
 
 # Network Tables for FRC
 pyntcore>=2026.0.0

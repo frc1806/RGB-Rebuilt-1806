@@ -29,7 +29,7 @@ setup(
     ],
     python_requires=">=3.9",
     install_requires=[
-        "ws2812-spi>=1.0.0",
+        "spidev>=3.5",  # SPI interface for LED control
         "pyntcore>=2026.0.0",
         "PyYAML>=6.0",
     ],
