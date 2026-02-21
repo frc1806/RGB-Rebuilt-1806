@@ -1,0 +1,73 @@
+# RGB-Reefscape-1806 Configuration
+# FRC Robot LED Controller for Orange Pi 5
+# Runs alongside PhotonVision
+
+# LED Hardware Configuration (SPI-based)
+hardware:
+  led_count: 150              # Total number of LEDs in strip
+  spi_dev: "/dev/spidev0.0"  # SPI device path
+  brightness: 128             # Global brightness (0-255)
+
+# Network Tables Configuration
+network_tables:
+  team_number: 1806           # FRC team number (calculates server address)
+  # Alternatively, use explicit server_address: "10.18.6.2"
+  connection_timeout: 5.0     # Seconds to wait for connection
+  reconnect_interval: 2.0     # Seconds between reconnection attempts
+
+# LED Section Configuration
+# Sections can be named uniquely and assigned a "type" to support multiple
+# sections of the same purpose (e.g., time displays on different sides of robot)
+sections:
+  time_display_left:
+    type: time_display        # Section type (groups sections by purpose)
+    start: 0                  # Starting LED index
+    length: 50                # Number of LEDs for time display
+    direction: "center"        # Countdown direction: left, right, or center
+
+  notifications:
+    type: notifications       # Single notification section
+    start: 50                 # Starting LED index
+    length: 50                # Number of LEDs for notifications/status
+
+  time_display_right:
+    type: time_display        # Second time display section
+    start: 100                # Starting LED index
+    length: 50                # Number of LEDs for time display
+    direction: "center"         # Countdown from opposite direction
+
+# Color Definitions (RGB values 0-255)
+colors:
+  # Time Display
+  active_period: [0, 255, 0]      # Green for active goal period
+  inactive_period: [255, 255, 255]  # White for inactive period
+
+  # Vision Status
+  vision_ok: [0, 255, 0]           # Green - connected with targets
+  vision_no_targets: [255, 255, 0] # Yellow - connected, no targets
+  vision_error: [255, 0, 0]        # Red - disconnected
+
+  # Swerve Alignment
+  aligned: [0, 255, 0]             # Green - module aligned
+  not_aligned: [255, 0, 0]         # Red - module not aligned
+
+  # General
+  off: [0, 0, 0]                   # LED off
+
+# Display Settings
+display:
+  fps: 30                     # Target frames per second
+  animation_speed: 1.0        # Animation speed multiplier
+
+# Notification Priority Configuration
+notifications:
+  priorities:
+    climb_complete: 10        # Highest priority
+    flywheel_ready: 5
+    vision_acquired: 3
+  default_duration: 3.0       # Default notification duration (seconds)
+
+# Simulation Mode (for development without hardware)
+simulation:
+  enabled: false              # Set to true to run without real LEDs
+  mock_network_tables: false  # Set to true to use mock NT data

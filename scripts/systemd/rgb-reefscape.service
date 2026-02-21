@@ -1,0 +1,29 @@
+[Unit]
+Description=RGB-Reefscape-1806 FRC LED Controller
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=USER_PLACEHOLDER
+WorkingDirectory=WORKING_DIR_PLACEHOLDER
+Environment="PYTHONUNBUFFERED=1"
+
+# Main command
+ExecStart=/usr/bin/python3 -m rgb_reefscape.main
+
+# Restart policy
+Restart=on-failure
+RestartSec=5s
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rgb-reefscape
+
+# Security hardening (optional, comment out if causing issues)
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

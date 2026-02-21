@@ -1,0 +1,15 @@
+# Core LED control (SPI-based for Orange Pi 5)
+ws2812-spi>=1.0.0
+
+# Network Tables for FRC
+pyntcore>=2026.0.0
+
+# Configuration
+PyYAML>=6.0
+
+# Optional: USB simulator
+pyserial>=3.5
+
+# Testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
