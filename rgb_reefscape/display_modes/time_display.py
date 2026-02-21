@@ -64,7 +64,7 @@ class TimeDisplayMode(StaticMode):
         # Get time data
         goal_active = data.get("goal_active", False)
         time_remaining = data.get("time_remaining", 0.0)
-        max_time = data.get("max_time", 30.0)  # Default max time
+        max_time = data.get("max_time", 10.0)  # Default max time
 
         # Determine color based on active/inactive
         color = self.active_color if goal_active else self.inactive_color
