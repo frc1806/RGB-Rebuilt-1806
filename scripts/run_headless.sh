@@ -45,9 +45,17 @@ else
     SIMULATE_FLAG="--simulate"
 fi
 
-# Run the application
+# Run the application (use venv if available, otherwise system python)
+if [ -f "$PROJECT_DIR/venv/bin/python3" ]; then
+    PYTHON="$PROJECT_DIR/venv/bin/python3"
+    log "Using virtual environment Python"
+else
+    PYTHON="python3"
+    log "Using system Python (venv not found)"
+fi
+
 log "Starting RGB-Rebuilt-1806..."
-python3 -m rgb_reefscape.main $SIMULATE_FLAG 2>&1 | tee -a "$LOG_FILE"
+$PYTHON -m rgb_reefscape.main $SIMULATE_FLAG 2>&1 | tee -a "$LOG_FILE"
 
 # Capture exit code
 EXIT_CODE=$?

@@ -73,17 +73,20 @@ If you prefer manual installation:
 ```bash
 # Install system dependencies
 sudo apt-get update
-sudo apt-get install -y python3-dev python3-pip
+sudo apt-get install -y python3-dev python3-pip python3-venv
 
 # Enable SPI interface (if not already enabled)
 # This varies by Orange Pi configuration tool
 # On some systems: sudo orangepi-config -> System -> Hardware -> spi-spidev
 
-# Install Python packages
-pip3 install -r requirements.txt
+# Create virtual environment
+python3 -m venv venv
 
-# Install the package
-pip3 install -e .
+# Activate virtual environment
+source venv/bin/activate
+
+# Install the package (this also installs dependencies)
+pip install -e .
 
 # Set up SPI permissions (if needed)
 sudo usermod -a -G spi $USER
@@ -171,6 +174,9 @@ RGB-Reefscape publishes:
 ### Running Manually
 
 ```bash
+# Activate virtual environment (if using manual install)
+source venv/bin/activate
+
 # Run with default config
 python3 -m rgb_reefscape.main
 
@@ -180,6 +186,8 @@ python3 -m rgb_reefscape.main --config /path/to/config.yaml
 # Run in simulation mode (no hardware required)
 python3 -m rgb_reefscape.main --simulate
 ```
+
+**Note**: The systemd service automatically uses the virtual environment, no activation needed for service usage.
 
 ### Running as Service
 
@@ -226,8 +234,11 @@ Priority-based display for:
 ### Running Tests
 
 ```bash
+# Activate virtual environment
+source venv/bin/activate
+
 # Install development dependencies
-pip3 install -e ".[dev]"
+pip install -e ".[dev]"
 
 # Run tests
 pytest tests/

@@ -127,9 +127,19 @@ echo -e "${GREEN}Installing Python dependencies...${NC}"
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "Project directory: $PROJECT_DIR"
 
-# Install as the actual user (not root)
+# Create virtual environment
+VENV_DIR="$PROJECT_DIR/venv"
+if [ -d "$VENV_DIR" ]; then
+    echo "Virtual environment already exists at $VENV_DIR"
+else
+    echo "Creating virtual environment at $VENV_DIR..."
+    sudo -u "$ACTUAL_USER" python3 -m venv "$VENV_DIR"
+fi
+
+# Install package in virtual environment
 echo "Installing RGB-Rebuilt-1806 Python package..."
-sudo -u "$ACTUAL_USER" pip3 install --user -e "$PROJECT_DIR"
+sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install --upgrade pip
+sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install -e "$PROJECT_DIR"
 
 # Install systemd service
 echo -e "${GREEN}Installing systemd service...${NC}"

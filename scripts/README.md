@@ -17,7 +17,8 @@ sudo ./install.sh
 - Detects platform (Orange Pi 5, Raspberry Pi 5, or generic Linux)
 - Installs system dependencies (Python 3, pip, dev tools)
 - Enables SPI interface
-- Installs Python packages
+- Creates Python virtual environment
+- Installs Python packages in venv
 - Sets up systemd service
 - Configures user groups and permissions
 
@@ -120,14 +121,19 @@ python3 -m rgb_reefscape.main --verbose
 ```
 
 ### Python packages not found
-Reinstall:
+The project uses a virtual environment. Reinstall:
 ```bash
-pip3 install -r requirements.txt
+# Remove old venv
+rm -rf venv
+
+# Reinstall
+sudo ./install.sh
 ```
 
-Or use install script:
+Or activate venv and install manually:
 ```bash
-sudo ./install.sh
+source venv/bin/activate
+pip install -e .
 ```
 
 ## Development
@@ -143,8 +149,25 @@ simulation:
 # Run install
 sudo ./install.sh
 
-# Test
+# Activate venv and test
+source venv/bin/activate
 python3 -m rgb_reefscape.main --simulate
+```
+
+### Manual development setup
+For development without running install script:
+```bash
+# Create venv
+python3 -m venv venv
+
+# Activate venv
+source venv/bin/activate
+
+# Install in editable mode
+pip install -e .
+
+# Run
+python3 -m rgb_reefscape.main --simulate --verbose
 ```
 
 ### Modifying systemd service

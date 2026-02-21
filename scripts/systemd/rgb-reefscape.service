@@ -9,8 +9,8 @@ User=USER_PLACEHOLDER
 WorkingDirectory=WORKING_DIR_PLACEHOLDER
 Environment="PYTHONUNBUFFERED=1"
 
-# Main command
-ExecStart=/usr/bin/python3 -m rgb_reefscape.main
+# Main command (uses virtual environment)
+ExecStart=WORKING_DIR_PLACEHOLDER/venv/bin/python3 -m rgb_reefscape.main
 
 # Restart policy
 Restart=on-failure

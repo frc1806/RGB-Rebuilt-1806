@@ -56,6 +56,9 @@ nano config.yaml
 ## Testing (1 minute)
 
 ```bash
+# Activate virtual environment
+source venv/bin/activate
+
 # Test simulation mode
 python3 -m rgb_reefscape.main --simulate --verbose
 
@@ -110,11 +113,13 @@ nano config.yaml
 # Check logs
 sudo journalctl -u rgb-reefscape -n 50
 
-# Try manual run
+# Try manual run (activate venv first)
+source venv/bin/activate
 python3 -m rgb_reefscape.main --verbose
 
-# Check Python installation
-python3 -m pip list | grep -E "ws2812|pyntcore|PyYAML"
+# Check Python installation in venv
+source venv/bin/activate
+pip list | grep -E "ws2812|pyntcore|PyYAML"
 ```
 
 ## Network Tables Topics (for Robot Code)
@@ -167,6 +172,7 @@ NetworkTableInstance.getDefault().getEntry("Robot/Climb/Complete").setBoolean(fa
 sudo systemctl stop rgb-reefscape
 
 # Run manually to debug
+source venv/bin/activate
 python3 -m rgb_reefscape.main --verbose
 
 # Reset to defaults
