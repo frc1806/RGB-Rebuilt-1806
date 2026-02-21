@@ -209,11 +209,11 @@ class NotificationQueue:
             data: Current robot data from Network Tables
         """
         # Check flywheel status
-        if data.get("flywheel_at_speed", False):
-            if not self.find_by_type("flywheel_ready"):
-                self.add("flywheel_ready")
-        else:
-            self.remove("flywheel_ready")
+        #if data.get("flywheel_at_speed", False):
+        #    if not self.find_by_type("flywheel_ready"):
+        #        self.add("flywheel_ready")
+        #else:
+        #    self.remove("flywheel_ready")
 
         # Check climb status
         if data.get("climb_complete", False):
