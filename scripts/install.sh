@@ -139,7 +139,34 @@ fi
 # Install package in virtual environment
 echo "Installing RGB-Rebuilt-1806 Python package..."
 sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install --upgrade pip
+
+# Install pyntcore explicitly first (Network Tables for FRC 2026)
+echo "Installing pyntcore (Network Tables library)..."
+if ! sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install pyntcore; then
+    echo -e "${YELLOW}Note: pyntcore 2026 version not found, trying latest available...${NC}"
+    sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install --upgrade pyntcore --pre || \
+    sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install robotpy-ntcore || \
+    echo -e "${RED}Could not install Network Tables library. You may need to install manually.${NC}"
+fi
+
+# Install the project and remaining dependencies
+echo "Installing project dependencies..."
 sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/pip" install -e "$PROJECT_DIR"
+
+# Verify installation
+echo "Verifying installation..."
+if sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/python" -c "import pyntcore; print(f'pyntcore {pyntcore.__version__} installed')" 2>/dev/null; then
+    echo -e "${GREEN}✓ pyntcore installed successfully${NC}"
+else
+    echo -e "${RED}✗ Warning: pyntcore not found. Network Tables may not work.${NC}"
+    echo "  You may need to install manually: source venv/bin/activate && pip install pyntcore"
+fi
+
+if sudo -u "$ACTUAL_USER" "$VENV_DIR/bin/python" -c "import spidev; print('spidev installed')" 2>/dev/null; then
+    echo -e "${GREEN}✓ spidev installed successfully${NC}"
+else
+    echo -e "${RED}✗ Warning: spidev not found. LED control may not work.${NC}"
+fi
 
 # Install systemd service
 echo -e "${GREEN}Installing systemd service...${NC}"

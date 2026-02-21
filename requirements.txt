@@ -2,7 +2,8 @@
 spidev>=3.5
 
 # Network Tables for FRC
-pyntcore>=2026.0.0
+# Note: Use pyntcore for 2025+, or robotpy-ntcore for older versions
+pyntcore>=2025.0.0
 
 # Configuration
 PyYAML>=6.0
