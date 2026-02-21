@@ -121,20 +121,22 @@ class LEDController:
         Returns:
             3 bytes of SPI data
         """
-        output = []
+        # Build bit string for all 8 bits
+        bits = []
         for bit_index in range(7, -1, -1):  # MSB first
             bit = (byte_val >> bit_index) & 1
             if bit:
-                output.append(self.BIT_1)
+                bits.extend([1, 1, 0])  # HIGH: 110
             else:
-                output.append(self.BIT_0)
+                bits.extend([1, 0, 0])  # LOW: 100
 
-        # Pack 8 3-bit values into 3 bytes
-        # output has 8 values of 3 bits each = 24 bits = 3 bytes
+        # Convert 24 bits into 3 bytes
         result = bytearray(3)
-        result[0] = (output[0] << 5) | (output[1] << 2) | (output[2] >> 1)
-        result[1] = (output[2] << 7) | (output[3] << 4) | (output[4] << 1) | (output[5] >> 2)
-        result[2] = (output[5] << 6) | (output[6] << 3) | output[7]
+        for i in range(3):
+            byte_val = 0
+            for j in range(8):
+                byte_val = (byte_val << 1) | bits[i * 8 + j]
+            result[i] = byte_val
 
         return bytes(result)
 
