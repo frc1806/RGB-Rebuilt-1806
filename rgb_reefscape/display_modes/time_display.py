@@ -101,7 +101,7 @@ class TimeDisplayMode(StaticMode):
 
         # Render based on direction
         if data.get("match_state", "unknown") in ["pre-match", "unknown"]:
-            self._render_center(section, led_controller, math.sin(time.time() * 2 * math.pi) * section.length, self.active_color)
+            self._render_center(section, led_controller, math.sin(time.time() * 2 * math.pi) * section.length, self.activeColor if (time.time() % 2.0 > 1) else self.inactive_color)
         elif direction == "left":
             self._render_left(section, led_controller, leds_to_light, color)
         elif direction == "right":
