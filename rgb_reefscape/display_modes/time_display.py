@@ -37,18 +37,13 @@ class TimeDisplayMode(StaticMode):
         self.inactive_color = tuple(config.get_color("inactive_period"))
         self.off_color = (0, 0, 0)
 
-        # Get direction from section config
-        section_config = config.get_section("time_display")
-        self.direction = section_config.get("direction", "right") if section_config else "right"
-
-        # Periodic logging
-        self.last_log_time = 0
+        # Periodic logging (tracked per section)
+        self.last_log_times = {}  # Dict[section_name, last_log_time]
         self.log_interval = 2.0  # Log every 2 seconds
 
         logger.info(
             f"Time display initialized "
-            f"(direction={self.direction}, "
-            f"active={self.active_color}, "
+            f"(active={self.active_color}, "
             f"inactive={self.inactive_color})"
         )
 
@@ -61,6 +56,9 @@ class TimeDisplayMode(StaticMode):
             led_controller: LEDController instance
             data: Current robot data from Network Tables
         """
+        # Get direction from section properties (defaults to "right" if not specified)
+        direction = section.properties.get("direction", "right")
+
         # Get time data
         goal_active = data.get("goal_active", False)
         time_remaining = data.get("time_remaining", 0.0)
@@ -83,12 +81,14 @@ class TimeDisplayMode(StaticMode):
 
         leds_to_light = int(ratio * section.length)
 
-        # Periodic logging (every 2 seconds)
+        # Periodic logging (every 2 seconds, tracked per section)
         current_time = time.time()
-        if current_time - self.last_log_time >= self.log_interval:
+        last_log_time = self.last_log_times.get(section.name, 0)
+        if current_time - last_log_time >= self.log_interval:
             match_state = data.get("match_state", "unknown")
             logger.info(
                 f"Time Display [{section.name}]: "
+                f"direction={direction}, "
                 f"state={match_state}, "
                 f"goal_active={goal_active}, "
                 f"time={time_remaining:.1f}/{MAX_DISPLAY_TIME:.1f}s, "
@@ -96,17 +96,17 @@ class TimeDisplayMode(StaticMode):
                 f"LEDs={leds_to_light}/{section.length}, "
                 f"color={'active' if goal_active else 'inactive'}"
             )
-            self.last_log_time = current_time
+            self.last_log_times[section.name] = current_time
 
         # Render based on direction
-        if self.direction == "left":
+        if direction == "left":
             self._render_left(section, led_controller, leds_to_light, color)
-        elif self.direction == "right":
+        elif direction == "right":
             self._render_right(section, led_controller, leds_to_light, color)
-        elif self.direction == "center":
+        elif direction == "center":
             self._render_center(section, led_controller, leds_to_light, color)
         else:
-            logger.warning(f"Unknown direction: {self.direction}, using right")
+            logger.warning(f"Unknown direction: {direction}, using right")
             self._render_right(section, led_controller, leds_to_light, color)
 
     def _render_left(
@@ -183,7 +183,7 @@ class TimeDisplayMode(StaticMode):
     def __repr__(self) -> str:
         """String representation."""
         return (
-            f"TimeDisplayMode(direction={self.direction}, "
+            f"TimeDisplayMode("
             f"active={self.active_color}, "
             f"inactive={self.inactive_color})"
         )
