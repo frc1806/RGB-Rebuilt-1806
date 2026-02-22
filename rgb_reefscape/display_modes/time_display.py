@@ -4,6 +4,7 @@ Displays countdown for active/inactive game periods
 """
 
 import logging
+import math
 import time
 from typing import Any, Dict, Tuple
 
@@ -99,7 +100,9 @@ class TimeDisplayMode(StaticMode):
             self.last_log_times[section.name] = current_time
 
         # Render based on direction
-        if direction == "left":
+        if match_state == "pre_match":
+            self._render_center(section, led_controller, math.sin(time.time() * 2 * math.pi) * section.length, self.active_color)
+        elif direction == "left":
             self._render_left(section, led_controller, leds_to_light, color)
         elif direction == "right":
             self._render_right(section, led_controller, leds_to_light, color)
@@ -157,7 +160,7 @@ class TimeDisplayMode(StaticMode):
             if distance_from_center <= half_lit:
                 led_controller.set_pixel(abs_index, *color)
             else:
-                led_controller.set_pixel(abs_index, *self.off_color)
+                led_controller.set_pixel(abs_index, *self.off_color)  
 
     def update(self, data: Dict[str, Any]) -> None:
         """
